@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+	<mapper namespace="com.dangschool.q_board.mapper.QnaMapper">
+		<!-- qna전체 목록 --> 
+		<select id="getList" resultType="com.dangschool.board.command.QnaVO"
+				parameterType="com.dangschool.util.Criteria">
+			select*from( select rownum as rn, C.* 
+				from(select B.* from qna_board B order by bulletinNo desc, num desc) C 
+				where rownum &lt;= #{count_oracle} 
+				)D where #{pageStart} &lt;= D.rn
+		</select>
+		
+		<!-- 검색시 qna전체 목록 -->
+		<!-- 오라클에서는 밑 키워드검색부분 없어도 작동한다해서 안했었는데, 이건 또 괄호 엏어줘야 정상 작동한다...? -->
+		<select id="listsearch" resultType="com.dangschool.board.command.QnaVO"
+				parameterType="com.dangschool.util.Criteria">
+			select*from( select rownum as rn, C.* 
+				from(select B.* from qna_board B order by bulletinNo desc, num desc) C 
+				where rownum &lt;= #{count_oracle} 
+				and ((q_title like '%'||#{keyword}||'%') or (q_content like '%' || #{keyword} || '%'))
+				)D where #{pageStart} &lt;= D.rn
+		</select>
+		
+		<!-- qna 등록 -->
+		<insert id="insertBoard" parameterType="com.dangschool.board.command.QnaVO">
+			insert into qna_board (q_title, id, q_content, q_pw, bulletinNo)
+				values(#{q_title},#{id},#{q_content},#{q_pw},#{bulletinNo})
+		</insert>
+		
+		<!-- qna 상세 -->
+		<select id="getContent" parameterType="int" resultType="com.dangschool.board.command.QnaVO">
+			select*from qna_board where num=#{num}
+		</select>
+		
+		<!-- qna 수정 -->
+		<update id="updateBoard" parameterType="com.dangschool.board.command.QnaVO">
+			update qna_board set q_title=#{q_title}, q_content=#{q_content} where num=#{num}
+		</update>
+		
+		<!-- qna 삭제 -->
+		<delete id="deleteBoard" parameterType="int">
+			delete from qna_board where num=#{num}
+		</delete>
+		
+		<!-- 게시글 수 전체 불러오기 -->
+		<select id="getTotal" resultType="int">
+			select count(*) from qna_board
+				<if test="keyword != null">
+					where q_title like '%'||#{keyword}||'%' or
+						  q_content like '%' || #{keyword} || '%'
+				</if>
+		</select>
+	
+		<!-- 이전글, 다음글 -->
+		<select id="movePage" parameterType="int" resultType="com.dangschool.board.command.QnaVO">
+			select*from(select
+					num,lead(num,1,9999) over(order by bulletinNo, num) as next,
+					lag(num,1,9999) over(order by bulletinNo, num) as last,
+					q_title,
+					lead(q_title,1,9999) over(order by bulletinNo, num) as nexttitle, 
+					lag(q_title,1,9999) over(order by bulletinNo, num) as lasttitle
+					
+					from qna_board order by bulletinNo desc, num desc)
+					where num=#{num}
+		</select>
+		
+		<!-- qna 조회수 -->
+		<update id="hit">
+			update qna_board set q_hit = q_hit +1 where num=#{num}
+		</update>
+	
+	</mapper>

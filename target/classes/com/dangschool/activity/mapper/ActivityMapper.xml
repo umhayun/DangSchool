@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.dangschool.activity.mapper.ActivityMapper">
+ 
+
+ <insert id="insert" parameterType="com.dangschool.activity.command.ActivityVO">
+	 insert into activityboard(title,content,id) values(#{title},#{content},#{id})
+ </insert>
+ 
+ <select id="list" parameterType="com.dangschool.util.Criteria" resultType="com.dangschool.activity.command.ActivityVO">
+ 	select * from(select * from(select rownum as rnum, B.* from activityboard B where rownum &lt;=#{img_oracle}
+ 			 <if test="keyword != null">
+                    and title like '%'||#{keyword}||'%' 
+                </if>
+ 		 order by num desc)
+ 		where #{pageStart} &lt;=rnum)
+ 		
+ </select>
+ <select id="getTotal" resultType="int" parameterType="com.dangschool.util.Criteria">
+ 	select count(*) from activityboard
+ 	<if test="keyword != null">
+            where title like '%'||#{keyword}||'%'
+     
+      </if>
+ </select>
+ <select id="content" parameterType="int" resultType="com.dangschool.activity.command.ActivityVO">
+ 	select * from activityboard where num=#{num}
+ </select>
+ <update id="updatehit" parameterType="int">
+ 	update activityboard set hit=hit+1 where num=#{num}
+ </update>
+ 
+<insert id="insertFile" parameterType="hashmap">
+    <![CDATA[
+        INSERT INTO tb_file
+        (
+           
+            ORG_FILE_NAME,
+            SAVE_FILE_NAME,
+            FILE_SIZE,
+            CREA_ID
+             
+        )
+        VALUES
+        (
+           
+            #{ ORG_FILE_NAME},
+            #{ SAVE_FILE_NAME},
+            #{ FILE_SIZE},
+            #{ CREA_ID}
+            
+        )
+    ]]>
+</insert>
+
+ <select id="maxNum" resultType="int">
+ 	select max(num) as last from activityboard
+ </select>
+  <select id="minNum" resultType="int">
+ 	select min(num) as first from activityboard
+ </select>
+ <select id="getImg" resultType="com.dangschool.activity.command.ImgVO" parameterType="int">
+ 	select save_file_name from tb_file where num=#{num}
+ </select>
+ 
+ <select id="getThumbnail" resultType="com.dangschool.activity.command.ImgVO">
+ 	select num, save_file_name
+ 	from tb_file
+ 	where idx in (select  min(idx)
+                        from tb_file
+                        group by num)
+
+ </select> 
+ <delete id="delete" parameterType="int">
+ 	delete from activityboard
+ 	where num=#{num}
+ </delete>
+ </mapper>

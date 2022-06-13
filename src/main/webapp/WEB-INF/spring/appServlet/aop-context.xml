@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	
+	<!-- login에 대한 인터셉터 -->
+	<interceptors>
+		<interceptor>
+			<!-- 마이페이지 관련 -->
+			<mapping path="/member/modify"/>
+			<mapping path="/member/update"/>
+			<mapping path="/member/myPage"/>
+			<mapping path="/member/changePwForm"/>
+			<mapping path="/member/delete"/>
+			
+			<!-- 리뷰 -->
+			<mapping path="/review/delete" />
+			<mapping path="/review/update" />
+			<mapping path="/review/modify" />
+			<mapping path="/review/register" />
+			
+			<!-- 공지사항 -->
+			<mapping path="/bulletin_board/content" />
+			<mapping path="/qna_board/register" />
+			<mapping path="/qna_board/content" />
+			<mapping path="/qna_board/modify" />
+			
+			<!-- 예약 -->
+			<mapping path="/consult_rs/c_register" />
+			<mapping path="/reservation/reserve" />
+			
+			<beans:bean class="com.dangschool.util.LoginInterceptor" />
+		</interceptor>
+	</interceptors>
+
+	<!-- BoardManager user_id가 'dangschool'이 아닌 경우  -->
+	<interceptors>
+		<interceptor>
+			<mapping path="/bulletin_board/register"/>
+			<mapping path="/bulletin_board/modify"/>
+			<mapping path="/consult_rs/c_list"/>
+			<mapping path="/consult_rs/c_content"/>
+			<beans:bean class="com.dangschool.util.BoardManagerInterceptor"></beans:bean>
+		</interceptor>
+	</interceptors>	
+
+	<aop:aspectj-autoproxy />
+	
+	<context:component-scan base-package="com.dangschool.util" />
+	
+	<context:component-scan base-package="com.dangschool.controller" />
+	<context:component-scan base-package="com.dangschool.b_board.service" />
+	<context:component-scan base-package="com.dangschool.c_board.service" />
+	<context:component-scan base-package="com.dangschool.q_board.service" />
+	
+	<context:component-scan base-package="com.dangschool.reservation.service"/>
+	<context:component-scan base-package="com.dangschool.reservation.mapper"/>
+	
+	<context:component-scan base-package="com.dangschool.activity.service"/>
+	<context:component-scan base-package="com.dangschool.activity.mapper"/>
+	
+	<context:component-scan base-package="com.dangschool.member.service" />
+	<context:component-scan base-package="com.dangschool.member.mapper" />
+	<context:component-scan base-package="com.dangschool.review.service" />
+	<context:component-scan base-package="com.dangschool.review.mapper" />
+	
+</beans:beans>		

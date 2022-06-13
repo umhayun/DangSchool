@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="com.dangschool.member.mapper.MemberMapper">
+ 
+ 	<!-- 회원가입 -->
+ 	<insert id="join" parameterType="com.dangschool.member.command.MemberVO">
+ 		insert into member(id, pw, name, phone1, phone2, email, addr, dog) 
+ 		values(#{id}, #{pw}, #{name}, #{phone1}, #{phone2}, #{email}, #{addr}, #{dog})
+ 	</insert>
+ 	
+ 	<!-- 로그인 -->
+ 	<select id="login" parameterType="com.dangschool.member.command.MemberVO" resultType="int">
+ 		select count(*) as result from member where id = #{id} and pw = #{pw}
+ 	</select>
+ 	
+ 	<!-- id 중복체크 (0이면 중복되지 않았다. 1이면 중복되었다)-->
+ 	<select id="checkId" resultType="int">
+ 		select count(*) as result from member where id = #{id}
+ 	</select>
+ 	
+ 	<!-- 회원정보 조회 -->
+ 	<select id="myPage"  parameterType="int" resultType="com.dangschool.member.command.MemberVO">
+ 		select * from member where id = #{id}
+ 	</select>
+ 	
+	<!-- 회원정보 조회 -->
+ 	<select id="modify"  parameterType="String" resultType="com.dangschool.member.command.MemberVO">
+ 		select * from member where id = #{id}
+ 	</select>
+ 	
+ 	<!-- 수정 -->
+ 	<update id="update" parameterType="com.dangschool.member.command.MemberVO">
+ 		update member set name = #{name}, phone1 = #{phone1}, phone2 = #{phone2}, email = #{email}, addr = #{addr}, dog = #{dog}
+		where id = #{id}
+ 	</update>
+ 	
+ 	<!-- 비밀번호 확인
+ 	<select id="pwCheck" resultType="map">
+ 		select pw from member where id = #{id}
+ 	</select> -->
+ 	
+ 	<!-- 비밀번호 변경 -->
+ 	<update id="changePw" parameterType="com.dangschool.member.command.MemberVO">
+ 		update member set pw = #{pw} where id = #{id}
+ 	</update>
+ 	
+ 	<!-- 탈퇴 -->
+ 	<delete id="delete" parameterType="com.dangschool.member.command.MemberVO">
+ 		delete from member where id = #{id} and pw = #{pw}
+ 	</delete>
+ 	
+ </mapper>

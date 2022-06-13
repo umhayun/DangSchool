@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.dangschool.reservation.mapper.ReservationMapper">
+ 	<insert id="reservation" parameterType="com.dangschool.reservation.command.ReservationVO" >
+ 		insert into reservation(id,name,phone1,phone2,dogname,doggender,kind,d_size,neuter,service,reservdate,sum,pay) 
+ 					values(#{id},#{name},#{phone1},#{phone2},#{dogname},#{doggender},
+ 							#{kind},#{d_size},#{neuter},#{service},#{reservdate},#{sum},#{pay})
+ 	</insert>
+ 	<select id="select" parameterType="String" resultType="com.dangschool.reservation.command.ReservationVO">
+ 		select * from reservation where id=#{user_id}
+ 	</select>
+ 	<update id="check" parameterType="int">
+ 		update reservation set complete='yes' where reservno=#{reservno}
+ 	</update>
+ 	<select id="manage" resultType="com.dangschool.reservation.command.ReservationVO">
+ 		select * from reservation
+ 	</select>
+ </mapper>

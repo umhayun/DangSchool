@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- 위 설정을 추가 -->
+ 
+ <mapper namespace="com.dangschool.review.mapper.ReviewMapper">
+ 
+  	<!-- 게시물 목록 -->
+ 	<select id="getList" resultType="com.dangschool.review.command.ReviewVO">
+ 		select * from review order by num DESC
+ 	</select>
+ 	
+ 	<!-- 게시물 등록 -->
+  	<insert id="insertReview">
+ 		insert into review(id, r_title, r_content, r_kind, r_weight, r_size, star) 
+ 			values(#{id}, #{r_title}, #{r_content}, #{r_kind}, #{r_weight}, #{r_size}, #{star})
+ 	</insert>
+ 	
+ 	<!-- 게시물 상세보기 -->
+ 	<!-- parameterType 속성 : 구문에 전달한 타입 -->
+ 	<select id="getContent" parameterType="int" resultType="com.dangschool.review.command.ReviewVO">
+ 		select * from review where num = #{num}
+ 	</select>
+ 	
+ 	<!-- 게시물 업데이트 -->
+ 	<update id="updateReview" parameterType="com.dangschool.review.command.ReviewVO">
+ 		update review set id = #{id}, r_title = #{r_title}, r_content = #{r_content}, r_kind = #{r_kind}, r_weight = #{r_weight}, r_size = #{r_size}, star = #{star} where num = #{num}
+ 	</update>
+
+ 	<!-- 게시물 삭제 -->
+ 	<delete id="deleteReview" parameterType="int">
+ 		delete from review where num = #{num}
+ 	</delete>
+ 	
+ 	<!-- 페이징 게시물 목록 처리 -->
+ 	<select id="pagingList" resultType="com.dangschool.review.command.ReviewVO" parameterType="com.dangschool.util.Criteria">
+ 			select * from 
+ 			(select rownum as rnum, B.* from review B where rownum &lt;= #{count_oracle} order by num desc) 
+ 			where #{pageStart} &lt;= rnum
+ 			<!-- 														      끝						  시작  -->
+ 	</select>
+ 	
+ 	<!-- 총 게시물 수 -->
+ 	<select id="getTotal" resultType="int">
+ 		select count(*) from review
+ 	</select>
+ </mapper>

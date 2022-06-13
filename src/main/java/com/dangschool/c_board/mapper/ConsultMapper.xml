@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+	<mapper namespace="com.dangschool.c_board.mapper.ConsultMapper">
+	
+	<!-- 상담예약 등록 -->
+   <insert id="insertConsult">
+      insert into consult_rs (phone1, phone2, name, email, consult_type, visit_date, dog_Kind, vaccine, c_content ) 
+      values (#{phone1}, #{phone2}, #{name}, #{email}, #{consult_type}, #{visit_date}, #{dog_Kind}, #{vaccine}, #{c_content})
+   </insert>
+	<!-- 상담예약 전체 목록 -->
+	<select id="readview" resultType="com.dangschool.board.command.ConsultVO"
+			parameterType="com.dangschool.util.Criteria">
+			select*from
+				(select rownum as rn, B.* from consult_rs B where 
+				rownum &lt;= #{count_oracle} order by num desc) 
+				where #{pageStart} &lt;= rn	
+		
+	</select>
+	
+	<!-- 검색시 상담예약 목록 --> 
+<!-- 검색시 상담예약 목록 --> 
+   <select id="listsearch" resultType="com.dangschool.board.command.ConsultVO"
+         parameterType="com.dangschool.util.Criteria">
+         select*from
+            (select rownum as rn, B.* from (select C.* from consult_rs C order by num desc)B
+               where rownum &lt;= #{count_oracle} 
+                  and 
+                  ((name like '%' || #{keyword} || '%') or 
+                  (phone1 like '%' || #{keyword} || '%') or
+                  (phone2 like '%' || #{keyword} || '%')))D
+            where #{pageStart} &lt;= D.rn   
+   </select>
+	
+	<!-- 상담예약 상세 -->	
+	<select id="getcontent" parameterType="int" resultType="com.dangschool.board.command.ConsultVO">
+		select*from consult_rs where num=#{num}
+	</select>
+	
+	<!-- 상담예약 삭제 -->
+	<delete id="delete">
+		delete from consult_rs where num=#{num}
+	</delete>
+	
+	<!-- 상담예약 총 게시글 수 -->
+	<select id="getTotal" parameterType="com.dangschool.util.Criteria" resultType="int" >
+		select count(*) from consult_rs
+		<if test ="keyword != null">
+			where ((name like '%' || #{keyword} || '%') or 
+				  (phone1 like '%' || #{keyword} || '%') or
+				  (phone2 like '%' || #{keyword} || '%'))
+		</if>
+	</select>
+	
+	<!-- 이전글, 다음글 -->
+	<select id="movePage" parameterType="int" resultType="com.dangschool.board.command.ConsultVO">
+		select*from(select
+					num,lead(num,1,9999) over(order by num) as next,
+					lag(num,1,9999) over(order by num) as last,
+					name,
+					lead(name,1,9999) over(order by num) as nextname, 
+					lag(name,1,9999) over(order by num) as lastname
+					
+					from consult_rs order by num desc)
+					where num=#{num}
+					
+	</select>
+	
+	<!-- member -->
+	<select id="member" parameterType="String" resultType="com.dangschool.board.command.ConsultVO">
+		select phone1, phone2, name, email from 
+			(select phone1, phone2, name, email from member where id=#{id})
+	</select>
+	
+	</mapper>

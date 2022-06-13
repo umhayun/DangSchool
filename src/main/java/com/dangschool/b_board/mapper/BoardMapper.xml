@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+	<mapper namespace="com.dangschool.b_board.mapper.BoardMapper">
+
+	<!-- 게시글 전체 보기 -->
+	<select id="getList" resultType="com.dangschool.board.command.BoardVO" 
+			parameterType="com.dangschool.util.Criteria">
+		select*from
+				(select rownum as rn, B.* from bulletin_board B where 
+				 rownum &lt;= #{count_oracle} order by num desc)
+				 where #{pageStart} &lt;= rn	
+	</select>
+	
+	<!-- 검색했을때 게시글 전체 보기 -->
+	<select id="getListsearch" resultType="com.dangschool.board.command.BoardVO" 
+			parameterType="com.dangschool.util.Criteria">
+		select*from( select rownum as rn, C.* 
+				from(select B.* from bulletin_board B order by num desc) C 
+				where rownum &lt;= #{count_oracle} 
+				and ((title like '%'||#{keyword}||'%') or (content like '%' || #{keyword} || '%'))
+				)D where #{pageStart} &lt;= D.rn	
+	</select>			
+	
+	<!-- 게시글 등록 -->
+	<insert id="insertBoard">
+		insert into bulletin_board (name, title, content) values(#{name}, #{title}, #{content})
+	</insert>
+	<!-- 게시글 상세 -->
+	<select id="getContent" parameterType="int" resultType="com.dangschool.board.command.BoardVO">
+		select*from bulletin_board where num=#{num}
+	</select>
+	
+	<!-- 게시글 업로드 -->
+	<update id="updateBoard" parameterType="com.dangschool.board.command.BoardVO">
+		update bulletin_board set title=#{title}, content=#{content} where num=#{num}
+	</update>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="deleteBoard" parameterType="int">
+		delete from bulletin_board where num=#{num}
+	</delete>
+	
+	<!-- 게시글 전체 불러오기 -->
+	<select id="getTotal" resultType="int">
+		select count(*) from bulletin_board
+			<if test="keyword != null"> where num >0
+				and title like '%'||#{keyword}||'%' or
+				 	  content like '%' ||#{keyword}||'%'
+			</if>
+	</select>
+	
+	<!-- 이전글, 다음글 -->
+	<select id="movePage" parameterType="int" resultType="com.dangschool.board.command.BoardVO">
+		select*from(select
+					num,lead(num,1,9999) over(order by num) as next,
+					lag(num,1,9999) over(order by num) as last,
+					title,
+					lead(title,1,9999) over(order by num) as nexttitle, 
+					lag(title,1,9999) over(order by num) as lasttitle
+					
+					from bulletin_board order by num desc)
+					where num=#{num}
+					
+	</select>
+	
+	<!-- member -->
+	<select id="member" parameterType="String" resultType="com.dangschool.board.command.BoardVO"> 
+		select name from(select name from member where id=#{id})
+	</select>
+	
+	</mapper>

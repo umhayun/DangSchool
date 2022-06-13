@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframeework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd  
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- DB설정 -->	
+	
+ 	<!-- HikariCP 설정 -->
+<!--	<bean id = "hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521/XEPDB1" />
+		<property name="username" value="testDB" />
+		<property name="password" value="testDB" />
+	</bean> -->
+	
+	<!-- DataSource 설정 -->
+	<bean id="ds" class="com.zaxxer.hikari.HikariDataSource">
+		<constructor-arg ref="hikariConfig"></constructor-arg>
+	</bean>
+	
+	<!-- JDBC템플릿 설정 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="ds"></property>
+	</bean>
+	
+	<!-- MyBatis의 사용의 핵심 객체 sessionFactory 추가 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="ds"></property>
+	</bean>
+	
+	<!-- 이미지 삽입 -->
+	<bean id="uploadPath" class="java.lang.String">
+		<!-- 이미지 저장받을 위치  -->
+        <constructor-arg value="C:\dang\DangSchool\src\main\webapp\resources\upload"/>
+    </bean>
+    
+   <context:component-scan base-package="com.dangschool.activity.command"></context:component-scan>
+
+	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"></property>
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521/XEPDB1"></property>
+		<property name="username" value="dangschool"></property>
+		<property name="password" value="dangschool"></property>
+	</bean>
+
+	
+	
+	<!-- MyBatis의 테스트 메서 스캔 
+	<mybatis-spring:scan base-package="com.dangschool.testmapper" /> --> 
+	
+	<!-- MyBatis의 생성한 패키지를 스캔하는 태그  -->
+	<mybatis-spring:scan base-package="com.dangschool.b_board.mapper"/>  
+	<mybatis-spring:scan base-package="com.dangschool.c_board.mapper"/>  
+	<mybatis-spring:scan base-package="com.dangschool.q_board.mapper"/>  
+	
+	<mybatis-spring:scan base-package="com.dangschool.member.mapper"/>
+	<mybatis-spring:scan base-package="com.dangschool.review.mapper"/>
+	
+	<mybatis-spring:scan base-package="com.dangschool.activity.mapper"/>
+	
+	<mybatis-spring:scan base-package="com.dangschool.reservation.mapper"/>
+</beans>
